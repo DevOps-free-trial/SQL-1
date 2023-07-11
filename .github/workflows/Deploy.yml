@@ -23,7 +23,7 @@ jobs:
       - name: Install az cli
         run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-      - uses: azure/login@v1
+      - uses: azure/login@v1.4.3
         name: Sign in to Azure
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
