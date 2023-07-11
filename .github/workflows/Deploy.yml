@@ -20,11 +20,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Set up Azure Login
-        uses: azure/login@v1
+      - name: Install az cli
+        run: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+      - uses: azure/login@v1
+        name: Sign in to Azure
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
-
+          environment: qa
+          
       - name: Create and Deploy DACPAC to Azure SQL Database
         run: 
 # Install DACPAC deployment tool
