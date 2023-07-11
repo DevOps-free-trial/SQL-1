@@ -1,0 +1,60 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+steps:
+- name: Checkout code
+uses: actions/checkout@v2
+steps:
+- name: Setup MSBuild
+uses: microsoft/setup-msbuild@v1.0.1
+steps:
+- name: Build DACPAC
+run: msbuild /t:Build /p:Configuration=Release /p:OutputPath=bin/Release
+steps:
+- name: Publish DACPAC
+uses: actions/upload-artifact@v2
+with:
+name: dacpac
+path: bin/Release/YourDatabase.dacpac
+
+deploy:
+needs: [build]
+runs-on: ubuntu-latest
+env:
+AZURE_SQL_SERVER: sqlldevops.database.windows.net
+AZURE_SQL_DB: DemoDevOps
+AZURE_SQL_USERNAME: DemoSql
+AZURE_SQL_PASSWORD: DemoDevOps$
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+steps:
+- name: Checkout code
+uses: actions/checkout@v2
+steps:
+- name: Download DACPAC
+uses: actions/download-artifact@v2
+with:
+name: dacpac
+steps:
+- name: Deploy to Azure SQL Database
+run: sqlpackage /a:Publish /tsn:tcp:${{ env.AZURE_SQL_SERVER }}.database.windows.net /tdn:${{ env.AZURE_SQL_DB }} /tu:${{ env.AZURE_SQL_USERNAME }} /tp:${{ env.AZURE_SQL_PASSWORD }} /sf:./YourDatabase.dacpac
