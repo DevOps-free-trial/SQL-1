@@ -1,34 +1,41 @@
 name: Deploy to Azure SQL Database
 
+# Controls when the workflow will run
 on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-branches:
-- main
+    branches:
+      - main
 
+ # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-build-and-deploy:
-runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-steps:
-- name: Checkout repository
-uses: actions/checkout@v2
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-- name: Set up Azure Login
-uses: azure/login@v1
-with:
-creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Set up Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-- name: Create and Deploy DACPAC to Azure SQL Database
-run: |
+      - name: Create and Deploy DACPAC to Azure SQL Database
+        run: 
 # Install DACPAC deployment tool
-sudo apt-get update && sudo apt-get -y install dacpac
-
+          sudo apt-get update && sudo apt-get -y install dacpac
+      - name: Deploy DACPAC to Azure SQL Database
+        run: 
 # Deploy DACPAC to Azure SQL Database
-dacpac --TargetServerName=sqlldevops.database.windows.net \
---TargetDatabaseName=DemoDevOps \
---Username=DemoSql \
---Password=DemoDevOps$ \
---CreateNewDatabase=$(create_new_db) \
---Action=Publish \
---SourceFileC:\Users\pragysahoo\Documents\SQL\SQL\DEMOSQLDB\database.dacpac`.
-```
+          dacpac --TargetServerName=sqlldevops.database.windows.net \
+          --TargetDatabaseName=DemoDevOps \
+          --Username=DemoSql \
+          --Password=DemoDevOps$ \
+          --CreateNewDatabase=$(create_new_db) \
+          --Action=Publish \
+          --SourceFileC:\Users\pragysahoo\Documents\SQL\SQL\DEMOSQLDB\database.dacpac`.
