@@ -28,7 +28,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           environment: qa
-          
+          enable-AzPSSession: true
       - name: Create and Deploy DACPAC to Azure SQL Database
         run: 
 # Install DACPAC deployment tool
@@ -42,4 +42,3 @@ jobs:
           --Password=DemoDevOps$ \
           --CreateNewDatabase=$(create_new_db) \
           --Action=Publish \
-          --SourceFileC:\Users\pragysahoo\Documents\SQL\SQL\DEMOSQLDB\database.dacpac`.
